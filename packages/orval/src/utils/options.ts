@@ -360,8 +360,10 @@ export async function normalizeOptions(
             outputOptions.override?.zod?.generateEachHttpStatus ?? false,
           dateTimeOptions: outputOptions.override?.zod?.dateTimeOptions ?? {},
           timeOptions: outputOptions.override?.zod?.timeOptions ?? {},
-          enforceIntegerType:
-            outputOptions.override?.zod?.enforceIntegerType ?? false,
+          preserveIntegerType:
+            outputOptions.override?.zod?.preserveIntegerType ?? false,
+          preserveOpenApiTypes:
+            outputOptions.override?.zod?.preserveOpenApiTypes ?? false,
         },
         swr: {
           generateErrorTypes: false,
@@ -552,7 +554,8 @@ function normalizeOperationsAndTags(
                     generateEachHttpStatus: zod.generateEachHttpStatus ?? false,
                     dateTimeOptions: zod.dateTimeOptions ?? {},
                     timeOptions: zod.timeOptions ?? {},
-                    enforceIntegerType: zod.enforceIntegerType ?? false,
+                    preserveIntegerType: zod.preserveIntegerType ?? false,
+                    preserveOpenApiTypes: zod.preserveOpenApiTypes ?? false,
                   },
                 }
               : {}),

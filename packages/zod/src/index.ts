@@ -673,7 +673,8 @@ export const generateZodValidationSchemaDefinition = (
     isInteger &&
     isString(type) &&
     type === 'number' &&
-    context.output.override.zod?.enforceIntegerType
+    (context.output.override.zod?.preserveIntegerType ||
+      context.output.override.zod?.preserveOpenApiTypes)
   ) {
     functions.push(['int', undefined]);
   }

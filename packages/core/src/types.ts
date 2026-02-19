@@ -562,7 +562,8 @@ export type ZodOptions = {
   dateTimeOptions?: ZodDateTimeOptions;
   timeOptions?: ZodTimeOptions;
   generateEachHttpStatus?: boolean;
-  enforceIntegerType?: boolean;
+  preserveIntegerType?: boolean;
+  preserveOpenApiTypes?: boolean;
 };
 
 export type ZodCoerceType = 'string' | 'number' | 'boolean' | 'bigint' | 'date';
@@ -599,7 +600,8 @@ export type NormalizedZodOptions = {
   generateEachHttpStatus: boolean;
   dateTimeOptions: ZodDateTimeOptions;
   timeOptions: ZodTimeOptions;
-  enforceIntegerType: boolean;
+  preserveIntegerType: boolean;
+  preserveOpenApiTypes: boolean;
 };
 
 export type InvalidateTarget =

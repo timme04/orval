@@ -1881,7 +1881,7 @@ describe('generateZodValidationSchemaDefinition`', () => {
       );
       expect(parsed.zod).toBe('zod.number().optional()');
     });
-    it('generates an integer as number (default, no enforceIntegerType)', () => {
+    it('generates an integer as a number (default, no preserveIntegerType)', () => {
       const schema: OpenApiSchemaObject = {
         type: 'integer',
       };
@@ -1912,7 +1912,7 @@ describe('generateZodValidationSchemaDefinition`', () => {
       );
       expect(parsed.zod).toBe('zod.number().optional()');
     });
-    it('generates an integer with .int() constraint when enforceIntegerType is true', () => {
+    it('generates an integer with .int() constraint when preserveIntegerType is true', () => {
       const schema: OpenApiSchemaObject = {
         type: 'integer',
       };
@@ -1920,7 +1920,7 @@ describe('generateZodValidationSchemaDefinition`', () => {
         output: {
           override: {
             useDates: false,
-            zod: { enforceIntegerType: true } as NormalizedZodOptions,
+            zod: { preserveIntegerType: true } as NormalizedZodOptions,
           },
         },
       } as ContextSpec;
@@ -1952,7 +1952,7 @@ describe('generateZodValidationSchemaDefinition`', () => {
       );
       expect(parsed.zod).toBe('zod.number().int().optional()');
     });
-    it('generates an integer with .int() constraint and min/max when enforceIntegerType is true', () => {
+    it('generates an integer with .int() constraint and min/max when preserveIntegerType is true', () => {
       const schema: OpenApiSchemaObject = {
         type: 'integer',
         minimum: 1,
@@ -1962,7 +1962,7 @@ describe('generateZodValidationSchemaDefinition`', () => {
         output: {
           override: {
             useDates: false,
-            zod: { enforceIntegerType: true } as NormalizedZodOptions,
+            zod: { preserveIntegerType: true } as NormalizedZodOptions,
           },
         },
       } as ContextSpec;
@@ -2000,6 +2000,46 @@ describe('generateZodValidationSchemaDefinition`', () => {
       expect(parsed.zod).toBe(
         'zod.number().int().min(1).max(testIntegerMinMaxMax).optional()',
       );
+    });
+    it('generates an integer with .int() constraint when preserveOpenApiTypes is true', () => {
+      const schema: OpenApiSchemaObject = {
+        type: 'integer',
+      };
+      const preserveContext: ContextSpec = {
+        output: {
+          override: {
+            useDates: false,
+            zod: { preserveOpenApiTypes: true } as NormalizedZodOptions,
+          },
+        },
+      } as ContextSpec;
+
+      const result = generateZodValidationSchemaDefinition(
+        schema,
+        preserveContext,
+        'testIntegerPreserve',
+        false,
+        false,
+        { required: false },
+      );
+
+      expect(result).toEqual({
+        functions: [
+          ['number', undefined],
+          ['int', undefined],
+          ['optional', undefined],
+        ],
+        consts: [],
+      });
+
+      const parsed = parseZodValidationSchemaDefinition(
+        result,
+        preserveContext,
+        false,
+        false,
+        false,
+      );
+      expect(parsed.zod).toBe('zod.number().int().optional()');
     });
     it('generates an number with min', () => {
       const schema: OpenApiSchemaObject = {
