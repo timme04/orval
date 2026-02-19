@@ -807,6 +807,8 @@ export default defineConfig({
             header: true,
           },
           generateEachHttpStatus: true,
+          preserveIntegerType: true,
+          preserveOpenApiTypes: true,
         },
       },
     },
@@ -843,6 +845,18 @@ Add preprocess functions to schemas.
 **Type:** `Object`
 
 Configure Zod datetime/time validation options.
+
+### preserveIntegerType
+
+**Type:** `Boolean`
+
+When `true`, OpenAPI `type: integer` schemas generate `zod.number().int()` instead of `zod.number()`, rejecting non-integer values at runtime.
+
+### preserveOpenApiTypes
+
+**Type:** `Boolean`
+
+When `true`, enables all OpenAPI type-precision behaviours, including `preserveIntegerType`. Use this as a single opt-in for full type fidelity between the OpenAPI specification and the generated Zod schemas.
 
 ---
 
