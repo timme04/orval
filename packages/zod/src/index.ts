@@ -669,7 +669,12 @@ export const generateZodValidationSchemaDefinition = (
     }
   }
 
-  if (isInteger && isString(type) && type === 'number') {
+  if (
+    isInteger &&
+    isString(type) &&
+    type === 'number' &&
+    context.output.override.zod?.enforceIntegerType
+  ) {
     functions.push(['int', undefined]);
   }
 

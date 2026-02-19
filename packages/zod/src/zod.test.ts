@@ -1,6 +1,7 @@
 import type {
   ContextSpec,
   GeneratorOptions,
+  NormalizedZodOptions,
   OpenApiSchemaObject,
 } from '@orval/core';
 import { describe, expect, it } from 'vitest';
@@ -1880,7 +1881,7 @@ describe('generateZodValidationSchemaDefinition`', () => {
       );
       expect(parsed.zod).toBe('zod.number().optional()');
     });
-    it('generates an integer with .int() constraint', () => {
+    it('generates an integer as number (default, no enforceIntegerType)', () => {
       const schema: OpenApiSchemaObject = {
         type: 'integer',
       };
@@ -1888,6 +1889,45 @@ describe('generateZodValidationSchemaDefinition`', () => {
       const result = generateZodValidationSchemaDefinition(
         schema,
         context,
+        'testIntegerDefault',
+        false,
+        false,
+        { required: false },
+      );
+
+      expect(result).toEqual({
+        functions: [
+          ['number', undefined],
+          ['optional', undefined],
+        ],
+        consts: [],
+      });
+
+      const parsed = parseZodValidationSchemaDefinition(
+        result,
+        context,
+        false,
+        false,
+        false,
+      );
+      expect(parsed.zod).toBe('zod.number().optional()');
+    });
+    it('generates an integer with .int() constraint when enforceIntegerType is true', () => {
+      const schema: OpenApiSchemaObject = {
+        type: 'integer',
+      };
+      const intContext: ContextSpec = {
+        output: {
+          override: {
+            useDates: false,
+            zod: { enforceIntegerType: true } as NormalizedZodOptions,
+          },
+        },
+      } as ContextSpec;
+
+      const result = generateZodValidationSchemaDefinition(
+        schema,
+        intContext,
         'testInteger',
         false,
         false,
@@ -1905,23 +1945,31 @@ describe('generateZodValidationSchemaDefinition`', () => {
 
       const parsed = parseZodValidationSchemaDefinition(
         result,
-        context,
+        intContext,
         false,
         false,
         false,
       );
       expect(parsed.zod).toBe('zod.number().int().optional()');
     });
-    it('generates an integer with .int() constraint and min/max', () => {
+    it('generates an integer with .int() constraint and min/max when enforceIntegerType is true', () => {
       const schema: OpenApiSchemaObject = {
         type: 'integer',
         minimum: 1,
         maximum: 100,
       };
+      const intContext: ContextSpec = {
+        output: {
+          override: {
+            useDates: false,
+            zod: { enforceIntegerType: true } as NormalizedZodOptions,
+          },
+        },
+      } as ContextSpec;
 
       const result = generateZodValidationSchemaDefinition(
         schema,
-        context,
+        intContext,
         'testIntegerMinMax',
         false,
         false,
@@ -1944,7 +1992,7 @@ describe('generateZodValidationSchemaDefinition`', () => {
 
       const parsed = parseZodValidationSchemaDefinition(
         result,
-        context,
+        intContext,
         false,
         false,
         false,
@@ -3196,7 +3244,7 @@ describe('generateZod required defaults regression (#2987)', () => {
       /"number": zod\.number\(\)\.default\(getGizmoResponseNumberDefault\)/,
     );
     expect(result.implementation).toMatch(
-      /"integer": zod\.number\(\)\.int\(\)\.default\(getGizmoResponseIntegerDefault\)/,
+      /"integer": zod\.number\(\)\.default\(getGizmoResponseIntegerDefault\)/,
     );
     expect(result.implementation).toMatch(
       /"nullableString": zod\.string\(\)\.nullish\(\)\.default\(getGizmoResponseNullableStringDefault\)/,

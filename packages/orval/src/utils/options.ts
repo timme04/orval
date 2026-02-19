@@ -360,6 +360,8 @@ export async function normalizeOptions(
             outputOptions.override?.zod?.generateEachHttpStatus ?? false,
           dateTimeOptions: outputOptions.override?.zod?.dateTimeOptions ?? {},
           timeOptions: outputOptions.override?.zod?.timeOptions ?? {},
+          enforceIntegerType:
+            outputOptions.override?.zod?.enforceIntegerType ?? false,
         },
         swr: {
           generateErrorTypes: false,
@@ -550,6 +552,7 @@ function normalizeOperationsAndTags(
                     generateEachHttpStatus: zod.generateEachHttpStatus ?? false,
                     dateTimeOptions: zod.dateTimeOptions ?? {},
                     timeOptions: zod.timeOptions ?? {},
+                    enforceIntegerType: zod.enforceIntegerType ?? false,
                   },
                 }
               : {}),
