@@ -213,6 +213,10 @@ export const generateZodValidationSchemaDefinition = (
 
   const functions: [string, unknown][] = [];
   const type = resolveZodType(schema);
+  const originalType = schema.type as string | string[] | undefined;
+  const isInteger =
+    originalType === 'integer' ||
+    (Array.isArray(originalType) && originalType.includes('integer'));
   const required = rules?.required ?? false;
   const hasDefault = schema.default !== undefined;
   const nullable =
@@ -663,6 +667,10 @@ export const generateZodValidationSchemaDefinition = (
         break;
       }
     }
+  }
+
+  if (isInteger && isString(type) && type === 'number') {
+    functions.push(['int', undefined]);
   }
 
   if (isString(type) && minAndMaxTypes.has(type)) {

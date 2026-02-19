@@ -1880,6 +1880,79 @@ describe('generateZodValidationSchemaDefinition`', () => {
       );
       expect(parsed.zod).toBe('zod.number().optional()');
     });
+    it('generates an integer with .int() constraint', () => {
+      const schema: OpenApiSchemaObject = {
+        type: 'integer',
+      };
+
+      const result = generateZodValidationSchemaDefinition(
+        schema,
+        context,
+        'testInteger',
+        false,
+        false,
+        { required: false },
+      );
+
+      expect(result).toEqual({
+        functions: [
+          ['number', undefined],
+          ['int', undefined],
+          ['optional', undefined],
+        ],
+        consts: [],
+      });
+
+      const parsed = parseZodValidationSchemaDefinition(
+        result,
+        context,
+        false,
+        false,
+        false,
+      );
+      expect(parsed.zod).toBe('zod.number().int().optional()');
+    });
+    it('generates an integer with .int() constraint and min/max', () => {
+      const schema: OpenApiSchemaObject = {
+        type: 'integer',
+        minimum: 1,
+        maximum: 100,
+      };
+
+      const result = generateZodValidationSchemaDefinition(
+        schema,
+        context,
+        'testIntegerMinMax',
+        false,
+        false,
+        { required: false },
+      );
+
+      expect(result).toEqual({
+        functions: [
+          ['number', undefined],
+          ['int', undefined],
+          ['min', '1'],
+          ['max', 'testIntegerMinMaxMax'],
+          ['optional', undefined],
+        ],
+        consts: [
+          'export const testIntegerMinMaxMax = 100;',
+          '\n',
+        ],
+      });
+
+      const parsed = parseZodValidationSchemaDefinition(
+        result,
+        context,
+        false,
+        false,
+        false,
+      );
+      expect(parsed.zod).toBe(
+        'zod.number().int().min(1).max(testIntegerMinMaxMax).optional()',
+      );
+    });
     it('generates an number with min', () => {
       const schema: OpenApiSchemaObject = {
         type: 'number',
@@ -3123,7 +3196,7 @@ describe('generateZod required defaults regression (#2987)', () => {
       /"number": zod\.number\(\)\.default\(getGizmoResponseNumberDefault\)/,
     );
     expect(result.implementation).toMatch(
-      /"integer": zod\.number\(\)\.default\(getGizmoResponseIntegerDefault\)/,
+      /"integer": zod\.number\(\)\.int\(\)\.default\(getGizmoResponseIntegerDefault\)/,
     );
     expect(result.implementation).toMatch(
       /"nullableString": zod\.string\(\)\.nullish\(\)\.default\(getGizmoResponseNullableStringDefault\)/,
